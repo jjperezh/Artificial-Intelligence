@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+# # -*- coding: utf-8 -*-
+""" Final Project - Tic-Tac-Toe"""
+__author__ = "Jorge Perez"
+
+import math
+import random
+import sys
+
+def create_board(s):
+    matrix = [['*'] * s for _ in range(s)]
+    return matrix
+
+def print_board(b):
+    for r in b:
+        for c in r:
+            print("  ", c, end="   ")
+        print("\n")
+
+def valid_position(b, number):
+    if number == 1:
+        return b[0][0] == '*'
+    if number == 2:
+        return b[0][1] == '*'
+    if number == 3:
+        return b[0][2] == '*'
+    if number == 4:
+        return b[1][0] == '*'
+    if number == 5:
+        return b[1][1] == '*'
+    if number == 6:
+        return b[1][2] == '*'
+    if number == 7:
+        return b[2][0] == '*'
+    if number == 8:
+        return b[2][1] == '*'
+    if number == 9:
+        return b[2][2] == '*'
+
+def drop_piece(b, s, piece):
+    if s == 1:
+        b[0][0] = piece
+    if s == 2:
+        b[0][1] = piece
+    if s == 3:
+        b[0][2] = piece
+    if s == 4:
+        b[1][0] = piece
+    if s == 5:
+        b[1][1] = piece
+    if s == 6:
+        b[1][2] = piece
+    if s == 7:
+        b[2][0] = piece
+    if s == 8:
+        b[2][1] = piece
+    if s == 9:
+        b[2][2] = piece
+
+
+def winning_move(b, piece):
+    winner = None
+
+    for r in range(size):
+        if b[r][0] == piece and b[r][1] == piece and b[r][2] == piece:
+            winner = piece
+        if b[0][r] == piece and b[1][r] == piece and b[2][r] == piece:
+            winner = piece
+        if b[0][0] == piece and b[1][1] == piece and b[2][2] == piece:
+            winner = piece
+        if b[2][0] == piece and b[1][1] == piece and b[0][2] == piece:
+            winner = piece
+
+
+    if winner is None and tie_board(b):
+        return 'Tie'
+    else:
+        return winner
+
+def tie_board(b):
+    full = 0
+
+    for r in range(size):
+        for c in range(size):
+            if b[r][c] == '*':
+                full +=1
+    if full == 0:
+        return True
+
+#-------------------------implemented pseudocode from GeeksForGeeks
+def minimax_helper(b, AI):
+    best_score = -math.inf
+    i = 0
+    j = 0
+
+    for r in range(size):
+        for c in range(size):
+            if b[r][c] == '*':
+                b[r][c] = AI
+                score = minimax(b, 0, False)
+                b[r][c] = '*'
+                if best_score < score:
+                    best_score = score
+                    i = r
+                    j = c
+    b[i][j] = AI
+
+#-----------------------------------implemented pseudocode from GeeksForGeeks & your slides
+def minimax(b, depth, players_turn):
+
+    if players_turn:
+        temp_piece = AI
+    else:
+        temp_piece = PLAYER
+
+    result = winning_move(b, temp_piece)
+
+    if result is not None:
+        score = result
+
+        if score == AI:
+            return 1
+        if score == PLAYER:
+            return -1
+        else:
+            return 0
+
+    if players_turn:
+        best_score = -math.inf
+        for r in range(size):
+            for c in range(size):
+                if b[r][c] == '*':
+                    b[r][c] = AI
+                    score = minimax(b, depth+1, False)
+                    b[r][c] = '*'
+                    best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = math.inf
+        for r in range(size):
+            for c in range(size):
+                if b[r][c] == '*':
+                    b[r][c] = PLAYER
+                    score = minimax(b, depth+1, True)
+                    b[r][c] = '*'
+                    best_score = min(score, best_score)
+        return best_score
+
+playersName = sys.argv[1]
+
+if playersName == "help":
+    print("\t\t\t\t\tHow to Play Tic-Tac-Toe...\n")
+    print("Tic-tac-toe is a game in which two players alternately put Xs and Os in compartments "
+          "of a figure formed by two vertical lines crossing two horizontal lines and each tries "
+          "to get a row of three Xs or three Os before the opponent does.\n")
+    print("You will go up against a Artificial Intelligence Computer.\n")
+    print("You can only pick 1-9 representing the board that will be created. The number selection will go "
+          "from low to high, going down.\n")
+    print("Example: Picking 1 will result in picking the first box in the first row. Picking 4 will result in picking "
+          "the first box in the second row. Picking 9 will result in picking the last box in the third row of the board.\n")
+    playersName = input("Please enter you name:")
+
+print("\n\t\t\tLets Play Tic-Tac-Toe!!!\n")
+print("Player 1:", playersName)
+print("Player 2: Computer\n")
+print(playersName,"your piece will be 'X'\n")
+PLAYER = 'X'
+AI = 'O'
+size = 3
+board = create_board(size)
+print_board(board)
+game_over = False
+
+turn = random.randint(0,1)
+# turn = 0
+
+while not game_over or input("exit"):
+    if turn == 0:
+        spot = int(input("Player 1: " + playersName + " make a selection: "))
+
+        if valid_position(board,spot):
+            drop_piece(board,spot,PLAYER)
+
+            if winning_move(board, PLAYER) == PLAYER:
+                game_over = True
+                print(playersName, "WON!")
+            elif winning_move(board, PLAYER) == 'Tie':
+                game_over = True
+                print("It's a TIE!")
+
+            turn += 1
+            turn = turn % 2
+            print_board(board)
+        else:
+            print("Pick another spot")
+
+    if turn != 0 and not game_over:
+        print("Computer's Turn...")
+        minimax_helper(board, AI)
+
+        if winning_move(board, AI) == AI:
+            game_over = True
+            print("Computer WON!")
+        elif winning_move(board, AI) == 'Tie':
+            game_over = True
+            print("It's a TIE!")
+
+        print_board(board)
+        turn += 1
+        turn = turn % 2
