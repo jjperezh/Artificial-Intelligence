@@ -1,0 +1,102 @@
+""" Eliza Homework - Relationship Advisor"""
+_author_="Jorge Perez"
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import re
+
+from art import *
+
+print("\nWelcome to\n")
+print("ELIZA")
+
+print("[Eliza]: Welcome, my name is Eliza, what is your name?")
+user = input("[YOU]: ")
+
+if re.match(r'\A[\w-]+\Z', user):
+    print("[Eliza]: Well hello", (''.join(user)), "how are you doing today?")
+else:
+    name = re.findall(r'is(.*)', user)
+    print("[Eliza]: Well hello", (''.join(name)), "how are you doing today?")
+
+user = input("[YOU]: ")
+
+while user != "bye":
+
+    sosoKeywords = re.findall(r'(okay|good|content|not good)', user)
+    happyKeywords = re.findall(r'(happy|joyful|smiling)', user)
+    activeKeywords = re.findall(r'(book|exercise|sport|gym|fight)', user)
+    sadKeywords = re.findall(r'(sad|unhappy|depressed|miserable|down|bad|crying|hurt|lost|past|death)', user)
+    familyKeywords = re.findall(r'(mother|mom|father|dad|sibling|sister|brother)', user)
+    edKeywords = re.findall(r'\b(\w+ed)\b', user)
+
+    word = ''.join(user)
+
+    if len(sosoKeywords) > 0:
+
+        word = ''.join(sosoKeywords)
+        print("[Eliza]: Hmm, can you tell me more about feeling just", word, "?")
+        user = input("[YOU]: ")
+        continue
+
+    elif word == 'not really' or word == 'no':
+        print("[Eliza]: No worries. What else would you like to talk about?")
+        user = input("[YOU]: ")
+        continue
+
+    elif len(happyKeywords) >= 1:
+        print("[Eliza]: I'm so glad to hear that!")
+        user = input("[YOU]: ")
+        continue
+
+    elif len(activeKeywords) >= 1:
+
+        word = ''.join(activeKeywords)
+
+        print("[Eliza]: What kind of", word, "?")
+        user = input("[YOU]: ")
+        continue
+
+    elif len(sadKeywords) >= 1:
+
+        word = ''.join(sadKeywords)
+
+        if word == 'hurt':
+            print("[Eliza]: Is there a specific reason why you're feeling", word, "?")
+        elif word == 'lost' or word == 'past':
+            print("[Eliza]: I'm so sorry to heard that, do you want to talk about it?")
+        else:
+            print("[Eliza]: Why are you", word, "?")
+
+        user = input("[YOU]: ")
+        continue
+
+    elif len(familyKeywords) >= 1:
+
+        word = ''.join(familyKeywords)
+
+        print("[Eliza]: Yes, I know family can be stressful, but specifically happen between you and your ", word, "?")
+        user = input("[YOU]: ")
+        continue
+
+    elif len(edKeywords) >= 1:
+
+        word = ''.join(edKeywords)
+        temp = re.sub('ed', '', word)
+
+        if word == 'ended':
+            print("[Eliza]: Why did it", temp, "?")
+        elif word == 'started':
+            print("[Eliza]: When did it", temp, "?")
+        elif word == 'passed':
+            print("[Eliza]: Congrats! What's next?")
+        else:
+            print("[Eliza]: Why did you get", temp, "?")
+
+        user = input("[YOU]: ")
+        continue
+
+    else:
+        print("[Eliza]: I see, can you please tell me more..")
+        user = input("[YOU]: ")
+        continue
